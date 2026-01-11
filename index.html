@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Card Gallery</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Space+Grotesk:wght@400;500;600&display=swap");
+
+      :root {
+        color-scheme: light;
+        --bg-deep: #0b1118;
+        --bg-mid: #0f222b;
+        --glow-teal: #2bb0a4;
+        --glow-gold: #f5b43a;
+        --glow-coral: #ff7a59;
+        --text-main: #f5f4ef;
+        --text-soft: #c6d2d7;
+        --card-dark: rgba(17, 24, 32, 0.75);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Space Grotesk", "Segoe UI", Tahoma, sans-serif;
+        color: var(--text-main);
+        background:
+          radial-gradient(800px 500px at 8% 15%, rgba(43, 176, 164, 0.25), transparent 60%),
+          radial-gradient(900px 600px at 95% 10%, rgba(245, 180, 58, 0.2), transparent 55%),
+          radial-gradient(700px 500px at 70% 90%, rgba(255, 122, 89, 0.18), transparent 60%),
+          linear-gradient(160deg, var(--bg-deep) 0%, var(--bg-mid) 50%, #0a1620 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 20px;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+        background-size: 48px 48px;
+        opacity: 0.35;
+        pointer-events: none;
+      }
+
+      .shell {
+        width: min(1100px, 100%);
+        display: grid;
+        gap: 32px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero {
+        background: var(--card-dark);
+        border-radius: 28px;
+        padding: 32px clamp(24px, 4vw, 48px);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+        animation: fadeUp 0.7s ease forwards;
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      .eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.24em;
+        font-size: 0.7rem;
+        color: var(--text-soft);
+        margin: 0 0 10px;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-family: "Fraunces", "Times New Roman", serif;
+        font-size: clamp(2rem, 3.2vw, 3.4rem);
+      }
+
+      .sub {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--text-soft);
+      }
+
+      .actions {
+        display: grid;
+        gap: 18px;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        animation: fadeUp 0.7s ease forwards;
+        animation-delay: 0.1s;
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      .card-btn {
+        text-decoration: none;
+        color: #081018;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 18px 22px;
+        border-radius: 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card-btn::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(120deg, rgba(255, 255, 255, 0.4), transparent 60%);
+        opacity: 0.6;
+        transform: translateX(-100%);
+        transition: transform 0.4s ease;
+      }
+
+      .card-btn:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+      }
+
+      .card-btn:hover::after {
+        transform: translateX(0);
+      }
+
+      .card-btn.mother {
+        background: linear-gradient(135deg, #ffd6c0, #ff9a7a);
+      }
+
+      .card-btn.grad {
+        background: linear-gradient(135deg, #fff0b2, #f5b43a);
+      }
+
+      .qr-panel {
+        display: grid;
+        justify-items: center;
+        gap: 14px;
+        padding: 26px;
+        border-radius: 24px;
+        background: rgba(9, 16, 22, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        animation: fadeUp 0.7s ease forwards;
+        animation-delay: 0.2s;
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      .qr-frame {
+        width: min(260px, 70vw);
+        aspect-ratio: 1 / 1;
+        border-radius: 18px;
+        border: 2px dashed rgba(255, 255, 255, 0.25);
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.05);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .qr-frame img {
+        display: none;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .qr-frame.is-ready img {
+        display: block;
+      }
+
+      .qr-placeholder {
+        text-align: center;
+        color: var(--text-soft);
+        padding: 12px;
+        font-size: 0.9rem;
+      }
+
+      .qr-frame.is-ready .qr-placeholder {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .qr-download {
+        padding: 12px 22px;
+        font-weight: 600;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: transparent;
+        color: var(--text-main);
+        cursor: pointer;
+        transition: background 0.2s ease, border-color 0.2s ease;
+      }
+
+      .qr-download:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+
+      .qr-download:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .qr-status {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--text-soft);
+        text-align: center;
+      }
+
+      @keyframes fadeUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 700px) {
+        body {
+          padding: 32px 16px;
+        }
+
+        .hero {
+          padding: 26px 20px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .hero,
+        .actions,
+        .qr-panel {
+          animation: none;
+          opacity: 1;
+          transform: none;
+        }
+
+        .card-btn,
+        .card-btn::after {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <p class="eyebrow">Digital Card Studio</p>
+        <h1>Choose a card to open</h1>
+        <p class="sub">Full screen cards for sharing and celebrating.</p>
+      </header>
+
+      <section class="actions">
+        <a class="card-btn mother" href="Happy_Mother_Day.html">Happy Mother Day Card</a>
+        <a class="card-btn grad" href="Graduate_2026.html">Graduate 2026 Card</a>
+      </section>
+
+      <section class="qr-panel">
+        <div id="qrFrame" class="qr-frame">
+          <img id="qrImage" src="qr-code.png" alt="QR code" />
+          <div id="qrPlaceholder" class="qr-placeholder">QR code goes here</div>
+        </div>
+        <button id="downloadQr" class="qr-download" type="button">Download QR Code</button>
+        <p id="qrStatus" class="qr-status">
+          Add your QR image later and the button will download it.
+        </p>
+      </section>
+    </main>
+
+    <script>
+      const qrImage = document.getElementById("qrImage");
+      const qrFrame = document.getElementById("qrFrame");
+      const downloadBtn = document.getElementById("downloadQr");
+      const qrStatus = document.getElementById("qrStatus");
+
+      const getQrSrc = () => {
+        const src = qrImage.getAttribute("src");
+        return src ? src.trim() : "";
+      };
+
+      const setReadyState = (ready) => {
+        qrFrame.classList.toggle("is-ready", ready);
+        downloadBtn.disabled = !ready;
+        qrStatus.textContent = ready
+          ? "QR code ready to download."
+          : "Add your QR image later and the button will download it.";
+      };
+
+      const wireQrState = () => {
+        const src = getQrSrc();
+        if (!src) {
+          setReadyState(false);
+          return;
+        }
+
+        qrImage.addEventListener("load", () => setReadyState(true));
+        qrImage.addEventListener("error", () => setReadyState(false));
+
+        if (qrImage.complete) {
+          setReadyState(qrImage.naturalWidth > 0);
+        }
+      };
+
+      downloadBtn.addEventListener("click", () => {
+        const src = getQrSrc();
+        if (!src) {
+          return;
+        }
+        const link = document.createElement("a");
+        link.href = src;
+        link.download = "qr-code.png";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      });
+
+      wireQrState();
+    </script>
+  </body>
+</html>
