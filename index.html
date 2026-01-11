@@ -92,7 +92,7 @@
         color: var(--text-soft);
       }
 
-      .actions {
+      .cards {
         display: grid;
         gap: 18px;
         grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -100,6 +100,21 @@
         animation-delay: 0.1s;
         opacity: 0;
         transform: translateY(16px);
+      }
+
+      .card-panel {
+        padding: 24px;
+        border-radius: 24px;
+        background: rgba(9, 16, 22, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        display: grid;
+        gap: 16px;
+        justify-items: center;
+        text-align: center;
+      }
+
+      .card-panel .card-btn {
+        width: 100%;
       }
 
       .card-btn {
@@ -146,22 +161,8 @@
         background: linear-gradient(135deg, #fff0b2, #f5b43a);
       }
 
-      .qr-panel {
-        display: grid;
-        justify-items: center;
-        gap: 14px;
-        padding: 26px;
-        border-radius: 24px;
-        background: rgba(9, 16, 22, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        animation: fadeUp 0.7s ease forwards;
-        animation-delay: 0.2s;
-        opacity: 0;
-        transform: translateY(16px);
-      }
-
       .qr-frame {
-        width: min(260px, 70vw);
+        width: min(240px, 70vw);
         aspect-ratio: 1 / 1;
         border-radius: 18px;
         border: 2px dashed rgba(255, 255, 255, 0.25);
@@ -223,6 +224,19 @@
         text-align: center;
       }
 
+      .qr-status a {
+        color: inherit;
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 3px;
+      }
+
+      .qr-link {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--text-soft);
+      }
+
       @keyframes fadeUp {
         to {
           opacity: 1;
@@ -242,8 +256,7 @@
 
       @media (prefers-reduced-motion: reduce) {
         .hero,
-        .actions,
-        .qr-panel {
+        .cards {
           animation: none;
           opacity: 1;
           transform: none;
@@ -264,81 +277,101 @@
         <p class="sub">Full screen cards for sharing and celebrating.</p>
       </header>
 
-      <section class="actions">
-        <a
-          class="card-btn mother"
-          href="https://anawallah.github.io/graduate_project_ahmed/Happy_Mother_Day.html"
-        >
-          Happy Mother Day Card
-        </a>
-        <a
-          class="card-btn grad"
-          href="https://anawallah.github.io/graduate_project_ahmed/Graduate_2026.html"
-        >
-          Graduate 2026 Card
-        </a>
-      </section>
+      <section class="cards">
+        <article class="card-panel qr-block">
+          <a
+            class="card-btn mother"
+            href="https://anawallah.github.io/graduate_project_ahmed/Happy_Mother_Day.html"
+          >
+            Happy Mother Day Card
+          </a>
+          <div class="qr-frame">
+            <img
+              class="qr-image"
+              src="qr-happy-mother.png"
+              alt="QR code for Happy Mother Day card"
+              data-download-name="Happy_Mother_Day_QR.png"
+            />
+            <div class="qr-placeholder">Happy Mother Day QR</div>
+          </div>
+          <button class="qr-download" type="button">Download QR Code</button>
+          <p class="qr-status">Add your QR image later and the button will download it.</p>
+        </article>
 
-      <section class="qr-panel">
-        <div id="qrFrame" class="qr-frame">
-          <img id="qrImage" src="qr-code.png" alt="QR code" />
-          <div id="qrPlaceholder" class="qr-placeholder">QR code goes here</div>
-        </div>
-        <button id="downloadQr" class="qr-download" type="button">Download QR Code</button>
-        <p id="qrStatus" class="qr-status">
-          Add your QR image later and the button will download it.
-        </p>
+        <article class="card-panel qr-block">
+          <a
+            class="card-btn grad"
+            href="https://anawallah.github.io/graduate_project_ahmed/Graduate_2026.html"
+          >
+            Graduate 2026 Card
+          </a>
+          <div class="qr-frame">
+            <img
+              class="qr-image"
+              src="qr-graduate-2026.png"
+              alt="QR code for Graduate 2026 card"
+              data-download-name="Graduate_2026_QR.png"
+            />
+            <div class="qr-placeholder">Graduate 2026 QR</div>
+          </div>
+          <button class="qr-download" type="button">Download QR Code</button>
+          <p class="qr-status">Add your QR image later and the button will download it.</p>
+        </article>
       </section>
     </main>
 
     <script>
-      const qrImage = document.getElementById("qrImage");
-      const qrFrame = document.getElementById("qrFrame");
-      const downloadBtn = document.getElementById("downloadQr");
-      const qrStatus = document.getElementById("qrStatus");
+      const qrBlocks = document.querySelectorAll(".qr-block");
 
-      const getQrSrc = () => {
-        const src = qrImage.getAttribute("src");
-        return src ? src.trim() : "";
-      };
+      qrBlocks.forEach((block) => {
+        const qrImage = block.querySelector(".qr-image");
+        const qrFrame = block.querySelector(".qr-frame");
+        const downloadBtn = block.querySelector(".qr-download");
+        const qrStatus = block.querySelector(".qr-status");
 
-      const setReadyState = (ready) => {
-        qrFrame.classList.toggle("is-ready", ready);
-        downloadBtn.disabled = !ready;
-        qrStatus.textContent = ready
-          ? "QR code ready to download."
-          : "Add your QR image later and the button will download it.";
-      };
+        const getQrSrc = () => {
+          const src = qrImage.getAttribute("src");
+          return src ? src.trim() : "";
+        };
 
-      const wireQrState = () => {
-        const src = getQrSrc();
-        if (!src) {
-          setReadyState(false);
-          return;
-        }
+        const setReadyState = (ready) => {
+          qrFrame.classList.toggle("is-ready", ready);
+          downloadBtn.disabled = !ready;
+          qrStatus.textContent = ready
+            ? "QR code ready to download."
+            : "Add your QR image later and the button will download it.";
+        };
 
-        qrImage.addEventListener("load", () => setReadyState(true));
-        qrImage.addEventListener("error", () => setReadyState(false));
+        const wireQrState = () => {
+          const src = getQrSrc();
+          if (!src) {
+            setReadyState(false);
+            return;
+          }
 
-        if (qrImage.complete) {
-          setReadyState(qrImage.naturalWidth > 0);
-        }
-      };
+          qrImage.addEventListener("load", () => setReadyState(true));
+          qrImage.addEventListener("error", () => setReadyState(false));
 
-      downloadBtn.addEventListener("click", () => {
-        const src = getQrSrc();
-        if (!src) {
-          return;
-        }
-        const link = document.createElement("a");
-        link.href = src;
-        link.download = "qr-code.png";
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
+          if (qrImage.complete) {
+            setReadyState(qrImage.naturalWidth > 0);
+          }
+        };
+
+        downloadBtn.addEventListener("click", () => {
+          const src = getQrSrc();
+          if (!src) {
+            return;
+          }
+          const link = document.createElement("a");
+          link.href = src;
+          link.download = qrImage.dataset.downloadName || "qr-code.png";
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        });
+
+        wireQrState();
       });
-
-      wireQrState();
     </script>
   </body>
 </html>
